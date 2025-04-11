@@ -13,13 +13,42 @@ def index(request):
     return render(request, 'index.html')
 
 from django.db.models import Sum
+from django.db.models.functions import TruncMonth
 
-from django.db.models import Sum
-
+from django.db.models import Q
+from django.shortcuts import render
+from .models import Expense
+from .forms import ExpenseSearchForm
 
 @login_required
 def dashboard_view(request):
+    # Search form handling
+    search_form = ExpenseSearchForm(request.GET)
+
+    # Get expenses filtered by search query, tags, or date range
     expenses = Expense.objects.filter(user=request.user)
+
+    # If search query exists, filter by description or category name
+    if search_form.is_valid():
+        query = search_form.cleaned_data.get('query', '')
+        if query:
+            expenses = expenses.filter(
+                Q(description__icontains=query) | Q(category__name__icontains=query)
+            )
+
+        # Filter by tags
+        tags = search_form.cleaned_data.get('tags', '')
+        if tags:
+            expenses = expenses.filter(tags__icontains=tags)
+
+        # Filter by date range
+        start_date = search_form.cleaned_data.get('start_date', None)
+        end_date = search_form.cleaned_data.get('end_date', None)
+        if start_date:
+            expenses = expenses.filter(date__gte=start_date)
+        if end_date:
+            expenses = expenses.filter(date__lte=end_date)
+
     total_expense = expenses.aggregate(Sum('amount'))['amount__sum'] or 0
 
     # Expense sum per category
@@ -29,12 +58,25 @@ def dashboard_view(request):
     chart_labels = [item['category__name'] for item in category_expenses]
     chart_data = [float(item['total']) for item in category_expenses]
 
+    # Expense trend over time (e.g., monthly)
+    trend_expenses = expenses.annotate(month=TruncMonth('date')).values('month').annotate(total=Sum('amount')).order_by('month')
+
+    # Prepare data for Line Chart (Monthly expense trend)
+    trend_labels = [expense['month'].strftime('%b %Y') for expense in trend_expenses]  # Format month as 'Jan 2025'
+    trend_data = [float(expense['total']) for expense in trend_expenses]
+
     context = {
         'total_expense': total_expense,
         'chart_labels': chart_labels,
         'chart_data': chart_data,
+        'trend_labels': trend_labels,
+        'trend_data': trend_data,
+        'search_form': search_form,
     }
+
     return render(request, 'dashboard.html', context)
+
+
 
 
 

@@ -16,8 +16,9 @@ class CategoryForm(forms.ModelForm):
 class ExpenseForm(forms.ModelForm):
     class Meta:
         model = Expense
-        fields = ['title', 'amount', 'category', 'description']
+        fields = ['title', 'amount', 'category', 'description','tags']
         date = forms.DateField(widget=forms.TextInput(attrs={'class': 'datepicker form-control'}))
+        tags = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'placeholder': 'Comma-separated tags (e.g. "food, grocery, home")'}))
 
 
     def clean_amount(self):
@@ -25,3 +26,9 @@ class ExpenseForm(forms.ModelForm):
         if amount <= 0:
             raise forms.ValidationError('Amount must be positive.')
         return amount
+
+class ExpenseSearchForm(forms.Form):
+    query = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'placeholder': 'Search expenses'}))
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    tags = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'placeholder': 'Search by tags'}))

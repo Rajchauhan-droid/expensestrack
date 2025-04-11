@@ -3,6 +3,19 @@
 <div class="container mt-5">
     <h2 class="mb-4">Dashboard</h2>
 
+        <!-- Search Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5>Search Expenses</h5>
+                <form method="GET" action="">
+                    {{ search_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+            </div>
+        </div>
+    
+    
+
     <!-- Total Expense -->
     <div class="card mb-4">
         <div class="card-body">
@@ -12,19 +25,46 @@
     </div>
 
     <!-- Pie Chart -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Expense Distribution by Category</h5>
+            <canvas id="expenseChart"></canvas> <!-- Pie chart -->
+        </div>
+    </div>
+
+    <!-- Line Graph for Expense Trend -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Expenses Trend Over Time</h5>
+            <canvas id="expenseLineChart"></canvas> <!-- Line graph -->
+        </div>
+    </div>
+
+</div>
+
 <!-- Include Chart.js from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">Expense Distribution by Category</h5>
-        <canvas id="expenseChart" width="400" height="400"></canvas>
-    </div>
-</div>
+<!-- CSS to control chart size -->
+<style>
+    /* Custom CSS to control the size of the pie chart */
+    #expenseChart {
+        width: 300px !important;  /* Override default width */
+        height: 300px !important; /* Override default height */
+    }
 
+    /* Custom CSS for the line chart */
+    #expenseLineChart {
+        width: 100% !important;
+        height: 400px !important;
+    }
+</style>
+
+<!-- Pie Chart JavaScript -->
 <script>
-    const ctx = document.getElementById('expenseChart').getContext('2d');
-    const pieChart = new Chart(ctx, {
+    // Pie Chart for expense distribution by category
+    const pieCtx = document.getElementById('expenseChart').getContext('2d');
+    const pieChart = new Chart(pieCtx, {
         type: 'pie',
         data: {
             labels: {{ chart_labels|safe }},
@@ -43,6 +83,40 @@
             plugins: {
                 legend: {
                     position: 'bottom',
+                }
+            }
+        }
+    });
+</script>
+
+<!-- Line Chart JavaScript -->
+<script>
+    // Line Chart for expense trend over time
+    const lineCtx = document.getElementById('expenseLineChart').getContext('2d');
+    const lineChart = new Chart(lineCtx, {
+        type: 'line',
+        data: {
+            labels: {{ trend_labels|safe }},
+            datasets: [{
+                label: 'Expense Trend',
+                data: {{ trend_data|safe }},
+                borderColor: '#36A2EB',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4 // Adds curve to the line graph
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
                 }
             }
         }

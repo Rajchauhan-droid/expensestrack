@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Edit Category{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Edit Category: {{ category.name }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}  <!-- Render the form fields as paragraph elements -->
+        
+        <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+    </form>
+
+    <a href="{% url 'expenses:category_list' %}" class="btn btn-secondary mt-3">Cancel</a>
+</div>
+{% endblock %}

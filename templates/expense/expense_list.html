@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Expenses List</h2>
+  <a href="{% url 'expenses:add_expense' %}" class="btn btn-primary mb-2">Add New Expense</a>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Amount</th>
+        <th>Category</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for e in expenses %}
+      <tr>
+        <td>{{ e.title }}</td>
+        <td>${{ e.amount }}</td>
+        <td>{{ e.category.name }}</td>
+        <td>
+          <a href="{% url 'expenses:edit_expense' e.id %}" class="btn btn-warning btn-sm">Edit</a>
+          <a href="{% url 'expenses:delete_expense' e.id %}" class="btn btn-danger btn-sm">Delete</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

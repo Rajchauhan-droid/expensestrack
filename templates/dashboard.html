@@ -4,17 +4,77 @@
     <h2 class="mb-4">Dashboard</h2>
 
         <!-- Search Form -->
-        <div class="card mb-4">
+        <div class="card mb-4 shadow-sm search-form-container">
             <div class="card-body">
-                <h5>Search Expenses</h5>
+                <h5 class="card-title mb-3">Search & Filter Expenses</h5>
                 <form method="GET" action="">
-                    {{ search_form.as_p }}
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <div class="row g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label">Query</label>
+                            {{ search_form.query }}
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Tags</label>
+                            {{ search_form.tags }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Start Date</label>
+                            {{ search_form.start_date }}
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">End Date</label>
+                            {{ search_form.end_date }}
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-primary">Search</button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
+        
+        
     
-    
+        <style>
+            .card {
+                border-radius: 12px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            }
+        
+            .card-title {
+                font-weight: 600;
+                color: #333;
+            }
+        
+            .form-label {
+                font-weight: 500;
+                color: #555;
+            }
+        
+            input[type="text"],
+            input[type="date"],
+            select {
+                border-radius: 8px !important;
+                padding: 8px 12px;
+            }
+        
+            .btn-primary {
+                border-radius: 8px;
+                font-weight: 500;
+                padding: 8px 16px;
+            }
+        
+            .btn-primary:hover {
+                background-color: #0056b3;
+            }
+        
+            .search-form-container {
+                background-color: #f8f9fa;
+                padding: 20px;
+                border-radius: 12px;
+            }
+        </style>
+        
 
     <!-- Total Expense -->
     <div class="card mb-4">

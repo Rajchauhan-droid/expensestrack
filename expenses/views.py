@@ -8,6 +8,9 @@ from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CategoryForm, ExpenseForm 
 
+import requests 
+from django.conf import settings
+
 
 def index(request):
     return render(request, 'index.html')
@@ -207,3 +210,88 @@ def expense_delete(request, pk):
     expense.delete()
     messages.success(request, "Expense deleted!")
     return redirect('expenses:expense_list')
+
+
+
+import requests
+from django.shortcuts import render
+from django.conf import settings
+
+# Add this to your settings.py (for API key storage)
+# CURRENCY_API_KEY = 'your_api_key_here'
+
+def currency_converter(request):
+    # Default currency values (for example)
+    from_currency = 'USD'
+    to_currency = 'EUR'
+    amount = 1
+
+    # If the form is submitted, use the data
+    if request.method == 'POST':
+        from_currency = request.POST.get('from_currency')
+        to_currency = request.POST.get('to_currency')
+        amount = float(request.POST.get('amount'))
+
+    # Construct the API URL
+    api_url = f"https://api.exchangerate-api.com/v4/latest/{from_currency}"
+
+    # Make the API request
+    response = requests.get(api_url)
+    data = response.json()
+
+    # Check if request is successful
+    if response.status_code == 200:
+        # Get the exchange rate for the selected currency
+        exchange_rate = data['rates'].get(to_currency)
+        if exchange_rate:
+            converted_amount = amount * exchange_rate
+        else:
+            converted_amount = None
+    else:
+        converted_amount = None
+
+    # Pass data to the template
+    context = {
+        'from_currency': from_currency,
+        'to_currency': to_currency,
+        'amount': amount,
+        'converted_amount': converted_amount,
+        'rates': data['rates']
+    }
+
+    return render(request, 'currency_converter.html', context)
+
+
+
+from .models import FinanceGoal
+from .forms import FinanceGoalForm
+
+# View to add or edit goals
+def view_goals(request):
+    goals = FinanceGoal.objects.all()
+    return render(request, 'finance/view_goals.html', {'goals': goals})
+
+def add_or_edit_goal(request, goal_id=None):
+    if goal_id:
+        goal = get_object_or_404(FinanceGoal, id=goal_id, user=request.user)
+    else:
+        goal = None
+
+    if request.method == 'POST':
+        form = FinanceGoalForm(request.POST, instance=goal)
+        if form.is_valid():
+            goal = form.save(commit=False)  # Don't save to DB yet
+            goal.user = request.user        # ✅ assign user here!
+            goal.save()
+            return redirect('expenses:view_goals')
+    else:
+        form = FinanceGoalForm(instance=goal)
+
+    return render(request, 'finance/add_or_edit_goal.html', {'form': form})
+
+
+
+def delete_goal(request, goal_id):
+    goal = get_object_or_404(FinanceGoal, id=goal_id)
+    goal.delete()
+    return redirect('expenses:view_goals')

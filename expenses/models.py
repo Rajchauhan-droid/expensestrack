@@ -34,3 +34,25 @@ class Budget(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Budget - {self.month.strftime('%B %Y')}"
+
+
+
+class FinanceGoal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)  # Name of the goal (e.g., "Save for vacation")
+    target_amount = models.DecimalField(max_digits=12, decimal_places=2)  # Target amount for the goal
+    current_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # Amount saved so far
+    start_date = models.DateField()  # When the user started saving for this goal
+    end_date = models.DateField()  # Deadline to reach the goal
+    description = models.TextField(blank=True, null=True)  # Optional description for the goal
+
+    def progress_percentage(self):
+        """Calculate the percentage of goal completed."""
+        if self.target_amount > 0:
+            return (self.current_amount / self.target_amount) * 100
+        return 0
+
+    def __str__(self):
+        return f"{self.name} - {self.progress_percentage():.2f}%"
+
+

@@ -26,9 +26,19 @@ urlpatterns = [
     path('expenses/edit/<int:pk>/', views.expense_update, name='edit_expense'),
     path('expenses/delete/<int:pk>/', views.expense_delete, name='delete_expense'),
 
+    path('currency_converter/', views.currency_converter, name='currency_converter'),
+
+
     # Budget (optional/future)
     # path('budget/', views.budget_view, name='budget'),
     
     # Legacy or placeholder route (optional)
     # path('category_list/', views.category_view, name='category_list'),
+
+    #finance
+    path('goal/delete/<int:goal_id>/', views.delete_goal, name='delete_goal'),
+    path('goals/', views.view_goals, name='view_goals'),  # View all goals
+    path('goal/add/', views.add_or_edit_goal, name='add_goal'),  # Add a goal
+    path('goal/edit/<int:goal_id>/', views.add_or_edit_goal, name='edit_goal')  # Make sure this is here
+
 ]

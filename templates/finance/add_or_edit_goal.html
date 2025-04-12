@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>{% if goal %}Edit{% else %}Add{% endif %} Goal</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">{% if goal %}Update{% else %}Add{% endif %} Goal</button>
+</form>
+
+
+
+{% endblock %}

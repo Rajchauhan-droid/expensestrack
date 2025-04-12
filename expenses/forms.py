@@ -32,3 +32,15 @@ class ExpenseSearchForm(forms.Form):
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     tags = forms.CharField(max_length=255, required=False, widget=forms.TextInput(attrs={'placeholder': 'Search by tags'}))
+
+
+from .models import FinanceGoal
+
+class FinanceGoalForm(forms.ModelForm):
+    class Meta:
+        model = FinanceGoal
+        fields = ['name', 'target_amount', 'current_amount', 'start_date', 'end_date', 'description']
+        widgets = {
+            'start_date': forms.DateInput(attrs={'type': 'date'}),
+            'end_date': forms.DateInput(attrs={'type': 'date'}),
+        }

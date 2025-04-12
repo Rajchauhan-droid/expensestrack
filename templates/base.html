@@ -43,6 +43,20 @@
                         <a class="nav-link" href="{% url 'expenses:expense_list' %}">Expenses_list</a>
 
                     </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="financeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Finance
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="financeDropdown">
+                            <li><a class="dropdown-item" href="{% url 'expenses:view_goals' %}">View Goals</a></li>
+                            <li><a class="dropdown-item" href="{% url 'expenses:add_goal' %}">Add Goal</a></li>
+                            <li><a class="dropdown-item" href="{% url 'expenses:currency_converter' %}">currency_converter</a></li>
+                        </ul>
+                    </li>
+                    
+
+                   
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'expenses:logout' %}">Logout</a>

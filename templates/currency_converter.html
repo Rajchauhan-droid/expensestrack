@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Currency Converter</h2>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="from_currency">From Currency</label>
+            <select name="from_currency" id="from_currency" class="form-control">
+                {% for currency in rates %}
+                    <option value="{{ currency }}" {% if currency == from_currency %}selected{% endif %}>{{ currency }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="to_currency">To Currency</label>
+            <select name="to_currency" id="to_currency" class="form-control">
+                {% for currency in rates %}
+                    <option value="{{ currency }}" {% if currency == to_currency %}selected{% endif %}>{{ currency }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" name="amount" class="form-control" id="amount" value="{{ amount }}" step="any">
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Convert</button>
+    </form>
+
+    {% if converted_amount %}
+        <div class="mt-4">
+            <h4>Conversion Result</h4>
+            <p>{{ amount }} {{ from_currency }} = {{ converted_amount }} {{ to_currency }}</p>
+        </div>
+    {% endif %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Your Financial Goals</h2>
+<h2>View Goals</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Target Amount</th>
+            <th>Current Amount</th>
+            <th>Progress</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for goal in goals %}
+        <tr>
+            <td>{{ goal.name }}</td>
+            <td>${{ goal.target_amount }}</td>
+            <td>${{ goal.current_amount }}</td>
+            <td>{{ goal.progress_percentage|floatformat:2 }}%</td>
+            <td>
+                <a href="{% url 'expenses:edit_goal' goal.id %}" class="btn btn-warning btn-sm">Edit</a>
+                <a href="{% url 'expenses:delete_goal' goal.id %}" class="btn btn-danger btn-sm"
+                   onclick="return confirm('Are you sure you want to delete this goal?');">Delete</a>
+            </td>
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+{% endblock %}

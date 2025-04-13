@@ -41,6 +41,9 @@ INSTALLED_APPS = [
     'widget_tweaks',
 ]
 
+# settings.py
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

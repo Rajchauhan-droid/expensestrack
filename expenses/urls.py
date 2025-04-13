@@ -39,6 +39,12 @@ urlpatterns = [
     path('goal/delete/<int:goal_id>/', views.delete_goal, name='delete_goal'),
     path('goals/', views.view_goals, name='view_goals'),  # View all goals
     path('goal/add/', views.add_or_edit_goal, name='add_goal'),  # Add a goal
-    path('goal/edit/<int:goal_id>/', views.add_or_edit_goal, name='edit_goal')  # Make sure this is here
+    path('goal/edit/<int:goal_id>/', views.add_or_edit_goal, name='edit_goal'),  # Make sure this is here
+
+
+
+    path('expenses/export/csv/', views.export_expenses_csv, name='export_expenses_csv'),
+    path('expenses/export/pdf/', views.export_expenses_pdf, name='export_expenses_pdf'),
+
 
 ]

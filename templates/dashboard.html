@@ -100,6 +100,12 @@
         </div>
     </div>
 
+    <div class="mb-3">
+        <a href="{% url 'expenses:export_expenses_csv' %}" class="btn btn-outline-success">Download CSV</a>
+        <a href="{% url 'expenses:export_expenses_pdf' %}" class="btn btn-outline-danger">Download PDF</a>
+    </div>
+    
+
 </div>
 
 <!-- Include Chart.js from CDN -->
@@ -151,20 +157,17 @@
 
 <!-- Line Chart JavaScript -->
 <script>
-    // Line Chart for expense trend over time
     const lineCtx = document.getElementById('expenseLineChart').getContext('2d');
-    const lineChart = new Chart(lineCtx, {
-        type: 'line',
+    const barChart = new Chart(lineCtx, {
+        type: 'bar',  // <-- Change from 'line' to 'bar'
         data: {
             labels: {{ trend_labels|safe }},
             datasets: [{
                 label: 'Expense Trend',
                 data: {{ trend_data|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',  // Bar fill color
                 borderColor: '#36A2EB',
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.4 // Adds curve to the line graph
+                borderWidth: 1
             }]
         },
         options: {
@@ -182,5 +185,6 @@
         }
     });
 </script>
+
 
 {% endblock %}

@@ -7,10 +7,14 @@ from datetime import datetime
 from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404, redirect
 from .forms import CategoryForm, ExpenseForm 
+from django.http import HttpResponse
+import csv
+from django.http import HttpResponseForbidden
 
 import requests 
 from django.conf import settings
-
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
 
 def index(request):
     return render(request, 'index.html')
@@ -23,12 +27,14 @@ from django.shortcuts import render
 from .models import Expense
 from .forms import ExpenseSearchForm
 
-@login_required
+
+# Use the login_required decorator to ensure users are logged in
+@login_required(login_url='login/')  # Set the correct login URL for your custom login page
 def dashboard_view(request):
     # Search form handling
     search_form = ExpenseSearchForm(request.GET)
 
-    # Get expenses filtered by search query, tags, or date range
+    # Get expenses filtered by user
     expenses = Expense.objects.filter(user=request.user)
 
     # If search query exists, filter by description or category name
@@ -78,6 +84,7 @@ def dashboard_view(request):
     }
 
     return render(request, 'dashboard.html', context)
+
 
 
 
@@ -295,3 +302,57 @@ def delete_goal(request, goal_id):
     goal = get_object_or_404(FinanceGoal, id=goal_id)
     goal.delete()
     return redirect('expenses:view_goals')
+
+
+
+def export_expenses_csv(request):
+    expenses = Expense.objects.filter(user=request.user)
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=expenses.csv'
+
+    writer = csv.writer(response)
+    writer.writerow(['Date', 'Description', 'Category', 'Amount', 'Tags'])
+
+    for expense in expenses:
+        writer.writerow([expense.date, expense.description, expense.category.name, expense.amount, expense.tags])
+
+    return response
+
+
+
+def export_expenses_pdf(request):
+    expenses = Expense.objects.filter(user=request.user)
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=expenses.pdf'
+
+    p = canvas.Canvas(response, pagesize=letter)
+    width, height = letter
+    y = height - 50
+
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(200, y, "Expense Report")
+    y -= 40
+    p.setFont("Helvetica", 10)
+    p.drawString(50, y, "Date")
+    p.drawString(130, y, "Description")
+    p.drawString(280, y, "Category")
+    p.drawString(380, y, "Amount")
+    p.drawString(450, y, "Tags")
+    y -= 20
+
+    for expense in expenses:
+        if y < 50:
+            p.showPage()
+            y = height - 50
+        p.drawString(50, y, str(expense.date))
+        p.drawString(130, y, expense.description)
+        p.drawString(280, y, expense.category.name)
+        p.drawString(380, y, f"${expense.amount}")
+        p.drawString(450, y, expense.tags or "")
+        y -= 20
+
+    p.showPage()
+    p.save()
+    return response
